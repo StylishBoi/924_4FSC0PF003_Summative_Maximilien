@@ -1,5 +1,5 @@
 ### C++ template
-# Compiled Object files
+# Compiled Object splat_files
 *.slo
 *.lo
 *.o
@@ -14,7 +14,7 @@
 *.dylib
 *.dll
 
-# Fortran module files
+# Fortran module splat_files
 *.mod
 
 # Compiled Static libraries
@@ -39,7 +39,7 @@
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 
-# Sensitive or high-churn files:
+# Sensitive or high-churn splat_files:
 .idea/dataSources.ids
 .idea/dataSources.xml
 .idea/dataSources.local.xml
@@ -57,7 +57,7 @@
 ## File-based project format:
 *.iws
 
-## Plugin-specific files:
+## Plugin-specific splat_files:
 
 # IntelliJ
 /out/

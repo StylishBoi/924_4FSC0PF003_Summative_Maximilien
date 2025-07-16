@@ -16,11 +16,8 @@ struct StringLiteral {
   char str[N];
 };
 
-template<typename TAsset, typename TAssetType, StringLiteral folderPath>
-  requires std::is_enum_v<TAssetType> && requires
-{
-  {static_cast<size_t>(TAssetType::kLength)};
-}
+template<typename TAsset, size_t TAssetSize, StringLiteral folderPath>
+
 class TextureManager {
 public:
 
@@ -30,15 +27,14 @@ public:
     }
   }
 
-  const TAsset &GetAsset(TAssetType asset_index) {
-    const auto index = static_cast<int64_t>(asset_index);
-    if (index < 0 || index >= std::ssize(assets_)) {
+  const TAsset& GetAsset(size_t asset_index) {
+    if (asset_index  >= assets_.size()) {
       throw std::out_of_range("Invalid index");
     }
-    return assets_[index];
+    return assets_[asset_index];
   }
 private:
-  std::array<TAsset, static_cast<size_t>(TAssetType::kLength)> assets_{};
+  std::array<TAsset, TAssetSize> assets_{};
 };
 
 }
