@@ -21,14 +21,6 @@ void GameSpriteManager::AddSpriteAtRandomPosition() {
         });
 }
 
-void GameSpriteManager::AddSpriteAtMouse(const sf::Vector2f mousePos) {
-    AddSprite(mousePos);
-}
-
-void GameSpriteManager::AddSprite(sf::Vector2f position) {
-    sprites_.push_back(std::make_unique<GameSprite>(position));
-}
-
 void GameSpriteManager::Update(const float deltaTime) {
     // Mise à jour de tous les sprites
     for (const auto& sprite : sprites_) {
@@ -40,6 +32,16 @@ void GameSpriteManager::Update(const float deltaTime) {
             [](const std::unique_ptr<GameSprite>& sprite) {
                 return !sprite->is_active();
             });
+}
+
+//DON'T CARE ABOUT THESE UNDER -----
+
+void GameSpriteManager::AddSpriteAtMouse(const sf::Vector2f mousePos) {
+  AddSprite(mousePos);
+}
+
+void GameSpriteManager::AddSprite(sf::Vector2f position) {
+  sprites_.push_back(std::make_unique<GameSprite>(position));
 }
 
 void GameSpriteManager::Draw(sf::RenderWindow& window) const{

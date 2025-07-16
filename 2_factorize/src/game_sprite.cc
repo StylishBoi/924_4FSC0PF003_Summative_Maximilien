@@ -10,6 +10,7 @@
 GameSprite::GameSprite(const sf::Vector2f pos)
     : position_(pos), alpha_(255.0f), is_active_(true) {
 
+    textures_.LoadAssets(files);
     gen_ = std::mt19937(rd_());
     color_dist_ = std::uniform_int_distribution<>(0, 255);
     texture_idx_dist_ = std::uniform_int_distribution<>(0, 35);
@@ -52,9 +53,11 @@ void GameSprite::Update(const float deltaTime) {
 void GameSprite::Draw(sf::RenderWindow& window) {
     if (!is_active_) return;
 
-    const sf::Texture texture(std::format("_assets/splats/splat{:02d}.png", texture_idx_));
+    const sf::Texture texture(textures_.GetAsset(SplatTexture(texture_idx_)));
 
     sf::Sprite sprite(texture);
+
+    //This part of the code doesn't matter
     sprite.setOrigin({static_cast<float>(texture.getSize().x) / 2.0f, static_cast<float>(texture.getSize().y) / 2.0f});
     sprite.setColor(current_color_);
     sprite.setScale({scale_, scale_});
@@ -63,6 +66,7 @@ void GameSprite::Draw(sf::RenderWindow& window) {
 
 }
 
+//Don't care about these
 bool GameSprite::is_active() const {
     return is_active_;
 }
