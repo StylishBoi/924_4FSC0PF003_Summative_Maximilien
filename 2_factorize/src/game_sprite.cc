@@ -6,6 +6,8 @@
 GameSprite::GameSprite(const sf::Vector2f pos)
     : position_(pos), alpha_(255.0f), is_active_(true) {
 
+  //I did not realize but the files are being loaded EVERY TIME a sprite is added
+
   //Fills up the list with all the splat files
   for(int i = 0; i < number_of_splash_sprites; i++){
     test_splat_files[i] = get_splat_png(i);
@@ -34,7 +36,6 @@ GameSprite::GameSprite(const sf::Vector2f pos)
   scale_ = scale_dist_(gen_);
   // Texture alèatoire
   texture_idx_ = texture_idx_dist_(gen_);
-
 }
 
 void GameSprite::Update(const float deltaTime) {

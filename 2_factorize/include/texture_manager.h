@@ -25,6 +25,7 @@ public:
     }
   }
 
+  //This function appears twice for some reason
   void LoadAssets(std::span<const std::string_view> assetsPaths) {
     for (size_t i = 0; i < assets_.size(); ++i) {
       assets_[i] = TAsset(std::format("{}/{}", folderPath.str, assetsPaths[i]));
