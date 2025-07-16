@@ -25,6 +25,7 @@ auto AlwaysSuccess = [](){return Status::kSuccess;};
 auto AlwaysRunning = [](){return Status::kRunning;};
 auto AlwaysFailed = [](){return Status::kFailure;};
 
+//Test if the leafs can have different status
 TEST(BehaviourTree, leaf_basics) {
 
   Leaf leaf_q(AlwaysSuccess);
@@ -38,6 +39,7 @@ TEST(BehaviourTree, leaf_basics) {
 
 }
 
+//Test if NoLoop is really empty at inilitation
 TEST(BehaviourTree, no_loop_empty) {
   NoLoop no_loop;
 
@@ -46,6 +48,7 @@ TEST(BehaviourTree, no_loop_empty) {
 
 }
 
+//Test if NoLoop works with one child
 TEST(BehaviourTree, no_loop_one_child) {
 
   bool check_conditions = false;
@@ -66,13 +69,75 @@ TEST(BehaviourTree, no_loop_one_child) {
 }
 
 TEST(BehaviourTree, no_loop_multiple_children) {
-  FAIL() << "Fill this test";
+  //In this test, NoLoop will stop on the first failure
+  NoLoop no_loop_failure;
+
+  no_loop_failure.Add(std::make_unique<Leaf>([&]{return simple_action(false, false);}));
+  no_loop_failure.Add(std::make_unique<Leaf>([&]{return simple_action(true, false);}));
+  no_loop_failure.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+
+  EXPECT_EQ(no_loop_failure.Tick(), Status::kFailure);
+
+  //In this test, NoLoop will go through all the running phases before landing on running status
+  NoLoop no_loop_running;
+
+  no_loop_running.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+  no_loop_running.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+  no_loop_running.Add(std::make_unique<Leaf>([&]{return simple_action(true, false);}));
+
+  EXPECT_EQ(no_loop_running.Tick(), Status::kRunning);
+
+  //In this test, NoLoop will go through all the success phases and be forced to return success in the end
+  NoLoop no_loop_success;
+
+  no_loop_success.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+  no_loop_success.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+  no_loop_success.Add(std::make_unique<Leaf>([&]{return simple_action(true, true);}));
+
+  EXPECT_EQ(no_loop_success.Tick(), Status::kSuccess);
 }
 
+//Check if a selector works with one child
 TEST(BehaviourTree, selector_one_child) {
-  FAIL() << "Fill this test";
+  Selector selector_1;
+  selector_1.Add(std::make_unique<Leaf>(AlwaysSuccess));
+  EXPECT_EQ(selector_1.Tick(), Status::kSuccess);
+
+  Selector selector_2;
+  selector_2.Add(std::make_unique<Leaf>(AlwaysRunning));
+  EXPECT_EQ(selector_2.Tick(), Status::kRunning);
+
+  Selector selector_3;
+  selector_3.Add(std::make_unique<Leaf>(AlwaysFailed));
+  EXPECT_EQ(selector_3.Tick(), Status::kFailure);
 }
 
 TEST(BehaviourTree, selector_multiple_children) {
-  FAIL() << "Fill this test";
+
+  //Selector will tick until finding a running OR success status
+  Selector multiple_run;
+
+  multiple_run.Add(std::make_unique<Leaf>(AlwaysFailed));
+  multiple_run.Add(std::make_unique<Leaf>(AlwaysRunning));
+  multiple_run.Add(std::make_unique<Leaf>(AlwaysSuccess));
+
+  EXPECT_EQ(multiple_run.Tick(), Status::kRunning);
+
+  //Selector will tick until finding a success OR success status
+  Selector multiple_success;
+
+  multiple_success.Add(std::make_unique<Leaf>(AlwaysFailed));
+  multiple_success.Add(std::make_unique<Leaf>(AlwaysFailed));
+  multiple_success.Add(std::make_unique<Leaf>(AlwaysSuccess));
+
+  EXPECT_EQ(multiple_success.Tick(), Status::kSuccess);
+
+  //Selector will tick and return failure as none of his children succeed or run
+  Selector multiple_failure;
+
+  multiple_failure.Add(std::make_unique<Leaf>(AlwaysFailed));
+  multiple_failure.Add(std::make_unique<Leaf>(AlwaysFailed));
+  multiple_failure.Add(std::make_unique<Leaf>(AlwaysFailed));
+
+  EXPECT_EQ(multiple_failure.Tick(), Status::kFailure);
 }
