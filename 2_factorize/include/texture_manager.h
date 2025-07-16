@@ -17,9 +17,13 @@ struct StringLiteral {
 };
 
 template<typename TAsset, size_t TAssetSize, StringLiteral folderPath>
-
 class TextureManager {
 public:
+  void LoadAssets(std::span<const std::string> assetsPaths) {
+    for (size_t i = 0; i < assets_.size(); ++i) {
+      assets_[i] = TAsset(std::format("{}/{}", folderPath.str, assetsPaths[i]));
+    }
+  }
 
   void LoadAssets(std::span<const std::string_view> assetsPaths) {
     for (size_t i = 0; i < assets_.size(); ++i) {
@@ -28,11 +32,12 @@ public:
   }
 
   const TAsset& GetAsset(size_t asset_index) {
-    if (asset_index  >= assets_.size()) {
+    if (asset_index >= assets_.size()) {
       throw std::out_of_range("Invalid index");
     }
     return assets_[asset_index];
   }
+
 private:
   std::array<TAsset, TAssetSize> assets_{};
 };

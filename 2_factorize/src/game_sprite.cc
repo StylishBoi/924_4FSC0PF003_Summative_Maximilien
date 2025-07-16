@@ -6,7 +6,13 @@
 GameSprite::GameSprite(const sf::Vector2f pos)
     : position_(pos), alpha_(255.0f), is_active_(true) {
 
-  textures_.LoadAssets(splat_files);
+  //Fills up the list with all the splat files
+  for(int i = 0; i < number_of_splash_sprites; i++){
+    test_splat_files[i] = get_splat_png(i);
+  }
+  //Made it, so LoadAssets intakes any type of strings, otherwise the files have to
+  //be initialized directly in the code
+  textures_.LoadAssets(test_splat_files);
 
   gen_ = std::mt19937(rd_());
   color_dist_ = std::uniform_int_distribution<>(0, 255);
@@ -74,6 +80,6 @@ float GameSprite::alpha() const {
   return alpha_;
 }
 
-/*std::string static constexpr get_splat_png(int splash_idx){
+std::string GameSprite::get_splat_png(int splash_idx) const {
   return std::format("splat{:02d}.png", splash_idx);
-}*/
+}
